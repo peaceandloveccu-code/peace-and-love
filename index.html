@@ -286,6 +286,27 @@ details.priv summary{cursor:pointer;font-weight:700;color:var(--heading)}
 .ticks .ic{color:var(--ok);margin-top:3px}
 .person{padding:1.4rem;text-align:left}
 .person .avatar{width:64px;height:64px;font-size:1.3rem;margin-bottom:.9rem}
+
+/* leadership & team */
+.team-cat{margin-bottom:3rem}
+.team-cat:last-child{margin-bottom:1.6rem}
+.team-cat-h{font-size:1.3rem;margin-bottom:.3rem}
+.team-cat-desc{max-width:42rem;margin-bottom:1.6rem}
+.team-card{padding:1.8rem 1.4rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.3rem;transition:transform .22s,box-shadow .22s,border-color .22s}
+.team-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--royal)}
+.team-photo{margin-bottom:.5rem}
+.team-card .avatar{width:96px;height:96px;font-size:1.9rem}
+.team-name{margin:0;font-size:1.05rem}
+.team-title{margin:0;color:var(--link);font-weight:600;font-size:.9rem}
+.team-bio{margin:.3rem 0 0;color:var(--muted);font-size:.9rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.team-card .btn{margin-top:.8rem}
+.profile-top{display:flex;gap:1.2rem;align-items:center;margin-bottom:.2rem}
+.profile-top .avatar{flex:none}
+.profile-avatar{width:120px;height:120px;font-size:2.4rem}
+.profile-title{margin:0 0 .4rem;font-weight:700;color:var(--heading)}
+.team-photo-edit{display:flex;flex-direction:column;align-items:center;gap:.6rem;flex:none}
+.team-photo-edit .avatar{width:72px;height:72px;font-size:1.4rem}
+.team-admin-card{margin-bottom:1.2rem}
 .mapbox{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);background:var(--bg-alt);min-height:260px;display:grid;place-items:center;text-align:center;padding:1.5rem;position:relative}
 .mapbox svg.bg{position:absolute;inset:0;width:100%;height:100%;opacity:.55}
 .mapbox>div{position:relative}
@@ -352,6 +373,7 @@ dialog::backdrop{background:rgba(6,14,36,.62)}
 <div id="live" aria-live="polite" aria-atomic="false"></div>
 <dialog id="dlg-enquiry" aria-labelledby="dlg-enquiry-title"></dialog>
 <dialog id="dlg-search" aria-label="Search this site"></dialog>
+<dialog id="dlg-profile" aria-labelledby="dlg-profile-title"></dialog>
 <noscript><p style="padding:2rem;font-family:sans-serif">This website needs JavaScript to display its pages. Please enable JavaScript, or contact us directly using the details in the footer.</p></noscript>
 
 <script>
@@ -511,6 +533,36 @@ const TESTIMONIALS = [
   { quote: "The Christmas savings plan means the festive season no longer catches me by surprise.", name: "Member Name", since: "20XX", sample: true },
   { quote: "I opened a children's savings account so that my daughter learns early to save. She checks her progress with pride.", name: "Member Name", since: "20XX", sample: true },
   { quote: "The staff took time to explain the loan terms and what would happen if I fell behind. That honesty built my trust.", name: "Member Name", since: "20XX", sample: true }
+];
+
+/* --- Leadership & Team ---------------------------------------------
+   One record per person: id, name, title, category, bio, photo, order.
+   category must be exactly one of TEAM_CATS. Edit, add or remove people
+   from the Staff admin page (#/admin → "Leadership & Team") — changes
+   there are saved for every visitor and do not require touching this code. */
+const TEAM_CATS = ["Board of Directors", "Management", "Staff"];
+const TEAM_CAT_DESC = {
+  "Board of Directors": "Elected by members at the Annual General Meeting to set policy and provide strategic oversight of the Society.",
+  "Management": "Responsible for the day-to-day running of the credit union and for carrying out the Board's policies.",
+  "Staff": "The team members who serve members directly, every day, at the branch and behind the scenes."
+};
+const TEAM = [
+  { id: "board-chair", category: "Board of Directors", order: 1, name: "[Name to be added]", title: "Chairperson", photo: CHAIR_IMG, bio: "Leads the Committee of Management and chairs meetings of the Board and the Annual General Meeting.", sample: true },
+  { id: "board-vicechair", category: "Board of Directors", order: 2, name: "[Name to be added]", title: "Vice-Chairperson", photo: "", bio: "Supports the Chairperson and presides over Board meetings in their absence.", sample: true },
+  { id: "board-secretary", category: "Board of Directors", order: 3, name: "[Name to be added]", title: "Secretary", photo: "", bio: "Keeps the Society's official records, including minutes of Board and general meetings.", sample: true },
+  { id: "board-treasurer", category: "Board of Directors", order: 4, name: "[Name to be added]", title: "Treasurer", photo: "", bio: "Oversees the Society's finances and reports on its financial position to the Board and members.", sample: true },
+  { id: "board-member1", category: "Board of Directors", order: 5, name: "[Name to be added]", title: "Board Member", photo: "", bio: "Contributes to policy decisions and strategic oversight of the Society on behalf of members.", sample: true },
+  { id: "mgmt-general", category: "Management", order: 1, name: "[Name to be added]", title: "General Manager", photo: "", bio: "Responsible for the overall day-to-day management and performance of the credit union.", sample: true },
+  { id: "mgmt-operations", category: "Management", order: 2, name: "[Name to be added]", title: "Operations Manager", photo: "", bio: "Oversees daily operations, service delivery and internal processes across the Society.", sample: true },
+  { id: "mgmt-finance", category: "Management", order: 3, name: "[Name to be added]", title: "Finance Manager", photo: "", bio: "Manages the Society's accounts, financial reporting and regulatory compliance.", sample: true },
+  { id: "mgmt-loans", category: "Management", order: 4, name: "[Name to be added]", title: "Loans Manager", photo: "", bio: "Oversees loan appraisal, disbursement and portfolio quality, working with the Loans Committee.", sample: true },
+  { id: "mgmt-branch", category: "Management", order: 5, name: "[Name to be added]", title: "Branch Manager", photo: "", bio: "Manages day-to-day service at the branch and supports members with their accounts and enquiries.", sample: true },
+  { id: "staff-accountant", category: "Staff", order: 1, name: "[Name to be added]", title: "Accountant", photo: "", bio: "Maintains the Society's financial records and prepares reports for management and the Board.", sample: true },
+  { id: "staff-loan-officer", category: "Staff", order: 2, name: "[Name to be added]", title: "Loan Officer", photo: "", bio: "Guides members through loan applications and helps assess loan requests.", sample: true },
+  { id: "staff-cso", category: "Staff", order: 3, name: "[Name to be added]", title: "Customer Service Officer", photo: "", bio: "The first point of contact for members — answering questions and helping with everyday transactions.", sample: true },
+  { id: "staff-cashier", category: "Staff", order: 4, name: "[Name to be added]", title: "Cashier", photo: "", bio: "Handles deposits, withdrawals and other over-the-counter transactions for members.", sample: true },
+  { id: "staff-admin-officer", category: "Staff", order: 5, name: "[Name to be added]", title: "Administrative Officer", photo: "", bio: "Supports the Society's day-to-day administration, records and member communications.", sample: true },
+  { id: "staff-other", category: "Staff", order: 6, name: "[Name to be added]", title: "Other Staff", photo: "", bio: "Additional team members who help the Society serve its members well.", sample: true }
 ];
 
 const FAQS = [
@@ -742,6 +794,41 @@ const initials = n => (n || "M N").trim().split(/\s+/).map(w => w[0]).slice(0, 2
 const Testimonial = t => `<figure class="card quote" style="margin:0">${t.sample ? '<span class="tag" style="align-self:flex-start">Sample content</span>' : ""}<blockquote>“${esc(t.quote)}”</blockquote>
   <figcaption><div class="who"><span class="avatar" aria-hidden="true">${initials(t.name)}</span><span><b>${esc(t.name || "Member")}</b><br><span class="muted">Member Since ${esc(t.since || "")}</span></span></div></figcaption></figure>`;
 
+/* --- Leadership & Team cards --- */
+const TeamCard = m => `<div class="card team-card">
+  <div class="team-photo">${m.photo ? `<img class="avatar avatar-photo" src="${m.photo}" alt="" width="96" height="96">` : `<span class="avatar" aria-hidden="true">${I("users", 32)}</span>`}</div>
+  <h3 class="team-name">${fmt(m.name)}</h3>
+  <p class="team-title">${esc(m.title)}</p>
+  ${m.bio ? `<p class="team-bio">${fmt(m.bio)}</p>` : ""}
+  <button class="btn btn-outline btn-sm" type="button" data-view-profile="${esc(m.id)}">View Profile</button>
+</div>`;
+
+const TeamCategory = cat => {
+  const members = TEAM.filter(m => m.category === cat).sort((a, b) => a.order - b.order);
+  if (!members.length) return "";
+  return `<div class="team-cat"><h3 class="team-cat-h">${esc(cat)}</h3><p class="muted team-cat-desc">${esc(TEAM_CAT_DESC[cat] || "")}</p>
+   <div class="grid g4 team-grid">${members.map(TeamCard).join("")}</div></div>`;
+};
+
+const TeamSection = () => `<section class="section section-alt" id="team"><div class="wrap">
+  ${SecHead("Our Leadership & Team", "Meet the people responsible for providing strong leadership, professional management, and quality service to our members.")}
+  ${TEAM_CATS.map(TeamCategory).join("")}
+  <p class="muted" style="margin-top:.5rem">The Committee of Management has between five and seven members, elected by the Annual General Meeting for four-year terms. A separate Loans Committee and Supervisory Committee, also elected by members, oversee lending decisions and internal checks.</p>
+</div></section>`;
+
+function openProfile(id) {
+  const m = TEAM.find(x => x.id === id); if (!m) return;
+  const d = $("#dlg-profile");
+  d.innerHTML = `<div class="dlg-head"><h2 id="dlg-profile-title">${fmt(m.name)}</h2><button class="icon-btn" type="button" data-close aria-label="Close">${I("x")}</button></div>
+   <div class="dlg-body">
+    <div class="profile-top">${m.photo ? `<img class="avatar avatar-photo" src="${m.photo}" alt="" width="120" height="120">` : `<span class="avatar profile-avatar" aria-hidden="true">${I("users", 44)}</span>`}
+     <div><p class="profile-title">${esc(m.title)}</p><span class="tag tag-cat">${esc(m.category)}</span></div></div>
+    <p style="margin-top:1.2rem">${m.bio ? fmt(m.bio) : fmt("[Biography to be added.]")}</p>
+    <div class="notice" style="margin-top:1.2rem">${I("mail")}<p style="margin:0">To reach this team member, please contact us using the details on our <a href="#/contact" data-close-dlg>Contact page</a>.</p></div>
+   </div>`;
+  d.showModal();
+}
+
 const Accordion = (items, idp = "faq") => `<div class="acc">${items.map(([q, a], i) => `<div class="acc-item">
   <h3 style="margin:0"><button class="acc-q" type="button" aria-expanded="false" aria-controls="${idp}-a${i}" id="${idp}-q${i}" data-acc><span>${esc(q)}</span>${I("chev")}</button></h3>
   <div class="acc-a" id="${idp}-a${i}" role="region" aria-labelledby="${idp}-q${i}"><div><p>${fmt(a)}</p></div></div></div>`).join("")}</div>`;
@@ -837,9 +924,7 @@ PAGES.about = () => ({ title: "About Us", desc: "A member-owned co-operative cre
   <div class="grid g3">${[["Member centric service", "Decisions and services are built around what our members need."], ["Education and empowerment", "We help members build the knowledge and confidence to manage their money well."], ["Accountability", "We are answerable to our members for how the Society is run and how funds are used."]].map(([t, d]) => `<div class="card pad"><h3>${t}</h3><p class="muted" style="margin:0">${d}</p></div>`).join("")}</div></div></section>
  <section class="section"><div class="wrap"><div class="split"><div><h2>Our history</h2><p class="muted">Peace & Love Co-operative Credit Union Ltd operates a Credit Union with Microfinance Orientation, registered under the Co-operative Societies Decree No. 252 of 1968 and its Regulations.</p></div>
   <ol class="timeline">${[["Registered", "[Year to be added]", "The Society was registered with the Registrar of Co-operative Societies, Ghana, and affiliated to the Ghana Co-operative Credit Union Association (CUA) Ltd."], ["Bye-laws adopted", "December 2024", "Members adopted the Society's current bye-laws and Articles of Association, setting out how the credit union is governed."], ["Today", "[Year to be added]", "[Describe where the credit union is now and what comes next.]"]].map(([t, y, d]) => `<li><b>${t} — ${fmt(y)}</b><span class="muted">${fmt(d)}</span></li>`).join("")}</ol></div></div></section>
- <section class="section section-alt"><div class="wrap">${SecHead("Leadership", "The Society is led by an elected Committee of Management (Board of Directors), supported by a Loans Committee, a Supervisory Committee and the Manager.")}
-  <div class="grid g4">${[["Chairperson", CHAIR_IMG], ["Vice-Chairperson", ""], ["Secretary", ""], ["Treasurer", ""]].map(([r, photo]) => `<div class="card person">${photo ? `<img class="avatar avatar-photo" src="${photo}" alt="" width="64" height="64">` : `<span class="avatar" aria-hidden="true">${I("users", 28)}</span>`}<h3 style="margin:0">${fmt("[Name to be added]")}</h3><p class="muted" style="margin:.2rem 0 0">${r}</p></div>`).join("")}</div>
-  <p class="muted" style="margin-top:1.4rem">The Committee of Management has between five and seven members, elected by the Annual General Meeting for four-year terms. A separate Loans Committee and Supervisory Committee, also elected by members, oversee lending decisions and internal checks.</p></div></section>
+ ${TeamSection()}
  <section class="section"><div class="wrap">${SecHead("Community involvement", "Our objectives place particular emphasis on women, youth and farmers in Nankese and its environs.")}
   <div class="grid g3">${[["book", "Financial literacy", "We help members build good saving habits and understand credit, in line with our focus on education and empowerment."], ["sprout", "Supporting women and farmers", "Micro-credit helps productively poor women and farmers mobilise savings and grow into full credit-union membership."], ["home", "Serving Nankese and its environs", "Our services are rooted in Nankese and the surrounding communities we were established to serve."]].map(([i, t, d]) => `<div class="card pad"><span class="icon-badge icon-gold">${I(i, 26)}</span><h3 style="margin-top:1rem">${t}</h3><p class="muted" style="margin:0">${fmt(d)}</p></div>`).join("")}</div></div></section>
  <section class="section section-alt"><div class="wrap">${WhyUs()}</div></section>${CTA()}` });
@@ -967,9 +1052,44 @@ async function initPlatform() {
     DB = await claude.use("db");
     if (user) { const can = await user.can("data.write"); ACCESS = can === false ? "denied" : "granted"; } // null = platform said nothing: stay optimistic, let a refused write decide
     else ACCESS = "denied";
-    if (DB) { const snap = await DB.doc("content/site").get(); if (snap.exists) { const data = snap.data(); if (data) applyContent(data); } }
+    if (DB) {
+      const snap = await DB.doc("content/site").get(); if (snap.exists) { const data = snap.data(); if (data) applyContent(data); }
+      const q = await DB.collection("content/team").get();
+      q.docs.forEach(d => { const data = d.data(); if (!data) return; const i = TEAM.findIndex(x => x.id === d.id); if (i > -1) Object.assign(TEAM[i], data, { id: d.id }); else TEAM.push({ ...data, id: d.id }); });
+    }
   } catch (e) { ACCESS = "denied"; }
   route(true);
+}
+function teamByCat(cat) { return TEAM.filter(m => m.category === cat).sort((a, b) => a.order - b.order); }
+async function saveTeamMember(m) {
+  const i = TEAM.findIndex(x => x.id === m.id); if (i > -1) Object.assign(TEAM[i], m); else TEAM.push(m);
+  if (!DB) { toast("Previewing only — open the published link to save changes for visitors.", true); renderAdminTab("team"); return; }
+  try { await DB.collection("content/team").doc(m.id).set(m); toast("Saved — visitors will see the update."); }
+  catch (e) {
+    if (e && e.code === "invalid_argument") { ACCESS = "denied"; toast("You don't have permission to save changes here.", true); }
+    else if (e && e.code === "quota_exceeded") toast("Couldn't save — storage limit reached. Try a smaller photo.", true);
+    else toast("Couldn't save. Please try again.", true);
+  }
+  renderAdminTab("team");
+}
+async function deleteTeamMember(id) {
+  const i = TEAM.findIndex(x => x.id === id); if (i > -1) TEAM.splice(i, 1);
+  if (DB) { try { await DB.collection("content/team").doc(id).delete(); toast("Member removed."); } catch (e) { toast("Couldn't delete. Please try again.", true); } }
+  renderAdminTab("team");
+}
+function squarePhoto(file, size) {
+  size = size || 300;
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const s = Math.min(img.width, img.height), sx = (img.width - s) / 2, sy = (img.height - s) / 2;
+      const c = document.createElement("canvas"); c.width = size; c.height = size;
+      c.getContext("2d").drawImage(img, sx, sy, s, s, 0, 0, size, size);
+      URL.revokeObjectURL(url); resolve(c.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("image load failed")); };
+    img.src = url;
+  });
 }
 function applyContent(d) {
   if (d.config) Object.assign(CONFIG, d.config);
@@ -989,7 +1109,7 @@ async function saveContent(partial) {
     else toast("Couldn't save. Please try again.", true);
   }
 }
-const ADMIN_TABS = [["contact", "Contact & Settings"], ["savings", "Savings"], ["loans", "Loans"], ["news", "News"], ["education", "Education"], ["testimonials", "Testimonials"], ["faq", "FAQ"]];
+const ADMIN_TABS = [["contact", "Contact & Settings"], ["team", "Leadership & Team"], ["savings", "Savings"], ["loans", "Loans"], ["news", "News"], ["education", "Education"], ["testimonials", "Testimonials"], ["faq", "FAQ"]];
 const ADMIN_FIELDS = {
   savings: [["rate", "Interest / return"], ["open", "Minimum opening amount"], ["bal", "Minimum balance"], ["wd", "Withdrawal conditions", "textarea"], ["elig", "Eligibility", "textarea"]],
   loans: [["amt", "Loan amount"], ["term", "Repayment period"], ["rate", "Interest rate"], ["elig", "Eligibility", "textarea"], ["docs", "Required documents (one per line)", "lines"]],
@@ -1029,11 +1149,47 @@ function adminContactForm() {
    <p class="help" style="margin-top:.8rem">Office hours table and social links aren't editable here yet — ask for that to be added if you need it.</p>
    <button class="btn btn-primary" type="submit" style="margin-top:1rem">Save changes</button></form>`;
 }
+function adminTeamCard(m) {
+  const fid = `team-${m.id}`;
+  return `<form class="card pad team-admin-card" data-team-save="${esc(m.id)}">
+   <div class="row" style="align-items:flex-start;gap:1.2rem;flex-wrap:nowrap">
+    <div class="team-photo-edit">
+     ${m.photo ? `<img class="avatar avatar-photo" src="${m.photo}" alt="" width="72" height="72">` : `<span class="avatar" aria-hidden="true">${I("users", 28)}</span>`}
+     <label class="btn btn-outline btn-sm" style="cursor:pointer">Change photo<input type="file" accept="image/*" data-team-photo hidden></label>
+    </div>
+    <div class="form-grid" style="flex:1">
+     <div class="field"><label for="${fid}-name">Full name</label><input id="${fid}-name" data-f="name" value="${esc(m.name)}"></div>
+     <div class="field"><label for="${fid}-title">Title / position</label><input id="${fid}-title" data-f="title" value="${esc(m.title)}"></div>
+     <div class="field"><label for="${fid}-cat">Category</label><select id="${fid}-cat" data-f="category">${TEAM_CATS.map(c => `<option ${c === m.category ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></div>
+     <div class="field"><label for="${fid}-order">Display order</label><input id="${fid}-order" type="number" data-f="order" value="${m.order}"></div>
+     <div class="field span"><label for="${fid}-bio">Biography / responsibilities</label><textarea id="${fid}-bio" data-f="bio">${esc(m.bio || "")}</textarea></div>
+    </div>
+   </div>
+   <div class="row" style="margin-top:1rem;justify-content:flex-end">
+    <button class="btn btn-outline btn-sm" type="button" data-team-delete="${esc(m.id)}">Delete</button>
+    <button class="btn btn-primary btn-sm" type="submit">Save member</button>
+   </div></form>`;
+}
+function adminTeamPanel() {
+  return `<div class="notice" style="margin-bottom:1.4rem">${I("alert")}<p style="margin:0">Each person's card saves on its own — click "Save member" after editing that card. Photos are resized and cropped to a square automatically.</p></div>
+   ${TEAM_CATS.map(cat => `<h3 style="margin:1.6rem 0 1rem">${esc(cat)}</h3>
+    ${teamByCat(cat).map(adminTeamCard).join("") || `<p class="muted">No one in this category yet.</p>`}
+    <button class="btn btn-outline btn-sm" type="button" data-team-add="${esc(cat)}" style="margin-bottom:.5rem">+ Add to ${esc(cat)}</button>`).join("")}`;
+}
+function teamFormSubmit(form) {
+  const id = form.dataset.teamSave, g = n => $(`[data-f="${n}"]`, form).value, existing = TEAM.find(x => x.id === id) || {};
+  const edits = window.__teamPhotoEdits || {};
+  const photo = Object.prototype.hasOwnProperty.call(edits, id) ? edits[id] : (existing.photo || "");
+  const member = { id, name: g("name").trim() || "[Name to be added]", title: g("title").trim(), category: g("category"), order: Number(g("order")) || 0, bio: g("bio").trim(), photo, sample: false };
+  delete edits[id];
+  saveTeamMember(member);
+}
 function renderAdminTab(key) {
   ADMIN_TAB = key;
   $$("[data-admin-tab]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.adminTab === key)));
   const el = $("#admin-panel"); if (!el) return;
   if (key === "contact") el.innerHTML = adminContactForm();
+  else if (key === "team") el.innerHTML = adminTeamPanel();
   else if (key === "savings") el.innerHTML = adminFixedList("savings", SAVINGS, "Product");
   else if (key === "loans") el.innerHTML = adminFixedList("loans", LOANS, "Loan");
   else if (key === "education") el.innerHTML = adminFixedList("education", ARTICLES, "Article");
@@ -1211,12 +1367,23 @@ document.addEventListener("click", e => {
   else if (t.matches("[data-admin-tab]")) renderAdminTab(t.dataset.adminTab);
   else if (t.matches("[data-add-row]")) { const form = t.closest("form"), key = form.dataset.adminSave; syncDynDraft(key, form); window.__draft[key].push(ADMIN_BLANK[key]()); renderAdminTab(key); }
   else if (t.matches("[data-remove-row]")) { const form = t.closest("form"), key = form.dataset.adminSave; syncDynDraft(key, form); window.__draft[key].splice(+t.dataset.removeRow, 1); renderAdminTab(key); }
+  else if (t.matches("[data-view-profile]")) openProfile(t.dataset.viewProfile);
+  else if (t.matches("[data-team-add]")) {
+    const cat = t.dataset.teamAdd, siblings = teamByCat(cat), order = siblings.length ? Math.max(...siblings.map(m => m.order)) + 1 : 1;
+    TEAM.push({ id: uid("team"), category: cat, order, name: "[Name to be added]", title: "", bio: "", photo: "", sample: false });
+    renderAdminTab("team");
+  }
+  else if (t.matches("[data-team-delete]")) {
+    if (!confirm("Remove this team member? This cannot be undone.")) return;
+    deleteTeamMember(t.dataset.teamDelete);
+  }
 });
 document.addEventListener("submit", e => {
   const f = e.target;
   if (f.matches("[data-form]")) { e.preventDefault(); submitForm(f); }
   else if (f.matches("[data-calc]")) { e.preventDefault(); calc(f); }
   else if (f.matches("[data-admin-save]")) { e.preventDefault(); adminSubmit(f); }
+  else if (f.matches("[data-team-save]")) { e.preventDefault(); teamFormSubmit(f); }
 });
 document.addEventListener("input", e => {
   const el = e.target;
@@ -1224,9 +1391,22 @@ document.addEventListener("input", e => {
   const calcForm = el.closest("[data-calc]"); if (calcForm) { const g = n => calcForm.elements[n].value.trim(); if (g("amount") && g("rate") && g("term")) calc(calcForm); return; }
   if (el.getAttribute("aria-invalid") === "true") { el.setAttribute("aria-invalid", "false"); const m = $("#" + el.id + "-e"); if (m) m.hidden = true; }
 });
-document.addEventListener("change", e => { const el = e.target; if (el.getAttribute && el.getAttribute("aria-invalid") === "true") { el.setAttribute("aria-invalid", "false"); const m = $("#" + el.id + "-e"); if (m) m.hidden = true; } const cf = el.closest && el.closest("[data-calc]"); if (cf && el.tagName === "SELECT") { const g = n => cf.elements[n].value.trim(); if (g("amount") && g("rate") && g("term")) calc(cf); } });
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.getAttribute && el.getAttribute("aria-invalid") === "true") { el.setAttribute("aria-invalid", "false"); const m = $("#" + el.id + "-e"); if (m) m.hidden = true; }
+  const cf = el.closest && el.closest("[data-calc]"); if (cf && el.tagName === "SELECT") { const g = n => cf.elements[n].value.trim(); if (g("amount") && g("rate") && g("term")) calc(cf); }
+  if (el.matches && el.matches("[data-team-photo]") && el.files && el.files[0]) {
+    const form = el.closest("form"), id = form.dataset.teamSave, holder = el.closest(".team-photo-edit");
+    squarePhoto(el.files[0]).then(durl => {
+      window.__teamPhotoEdits = window.__teamPhotoEdits || {}; window.__teamPhotoEdits[id] = durl;
+      const old = holder.querySelector(".avatar"); if (old) old.remove();
+      const img = document.createElement("img"); img.className = "avatar avatar-photo"; img.width = 72; img.height = 72; img.alt = ""; img.src = durl;
+      holder.insertBefore(img, holder.firstChild);
+    }).catch(() => toast("Couldn't read that image. Please try a different file.", true));
+  }
+});
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
-["dlg-enquiry", "dlg-search"].forEach(id => $("#" + id).addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); }));
+["dlg-enquiry", "dlg-search", "dlg-profile"].forEach(id => $("#" + id).addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); }));
 
 /* =====================================================================
    8. START
