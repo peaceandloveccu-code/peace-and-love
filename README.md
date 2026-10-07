@@ -1,6 +1,6 @@
 # Peace & Love Co-operative Credit Union — Website
 
-A self-contained, mobile-responsive website for Peace & Love Co-operative Credit Union Ltd (Nankese, Eastern Region, Ghana), built as a single `index.html` file (no build step, no dependencies).
+A self-contained, mobile-responsive website for Peace & Love Co-operative Credit Union Ltd (Koforidua-Nankese, Eastern Region, Ghana), built as a single `index.html` file (no build step, no dependencies).
 
 ## What's inside
 

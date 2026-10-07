@@ -396,8 +396,8 @@ const MEM1_IMG = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUEBAQ
 const CONFIG = {
   name: "Peace & Love Co-operative Credit Union",
   tagline: "Peace & Love. Community. Cooperation.",
-  address: "Nankese, Eastern Region, Ghana",       // no street address in the bye-laws — add the office landmark/location here
-  postal: "P. O. Box 21, Nankese, Eastern Region, Ghana",
+  address: "Koforidua-Nankese, Eastern Region, Ghana",       // no street address in the bye-laws — add the office landmark/location here
+  postal: "P. O. Box 21, Koforidua-Nankese, Eastern Region, Ghana",
   phone: "[+233 XX XXX XXXX]",
   whatsapp: "",                                  // digits only, e.g. "233240000000". Leave empty to hide the WhatsApp button.
   whatsappDisplay: "[+233 XX XXX XXXX]",
@@ -407,12 +407,12 @@ const CONFIG = {
   mapsUrl: "",                                   // paste a Google Maps link to enable "Get directions"
   regulatory: "Registered under the Co-operative Societies Decree, 1968 (NLCD 252) and its Regulations. Affiliated to the Ghana Co-operative Credit Union Association (CUA) Ltd. Registration number: [to be added].",
   social: { facebook: "", instagram: "", x: "", linkedin: "", youtube: "" }, // paste full URLs
-  branches: ["Nankese (Head Office)"],
+  branches: ["Koforidua-Nankese (Head Office)"],
   idTypes: ["Ghana Card", "Passport", "Driver's Licence", "Voter's ID", "Other"],
   // Membership eligibility — from the Society's bye-laws, Paragraph 36 (Qualification for Membership)
   eligibility: [
-    "Persons living or working within Nankese and its environs, the Society's registered area of operation",
-    "Citizens and non-citizens of the catchment area, including those living outside Nankese",
+    "Persons living or working within Koforidua-Nankese and its environs, the Society's registered area of operation",
+    "Citizens and non-citizens of the catchment area, including those living outside Koforidua-Nankese",
     "Persons of good character",
     "Applicants aged 18 or over may vote as members; the Committee of Management confirms any conditions for younger applicants"
   ],
@@ -573,7 +573,7 @@ const TEAM = [
 ];
 
 const FAQS = [
-  ["Who can become a member?", "Membership is open to people living or working in Nankese and its environs, and to citizens and non-citizens of that catchment area, including those living outside Nankese, provided they are of good character. See “Who can join?” on the Membership page."],
+  ["Who can become a member?", "Membership is open to people living or working in Koforidua-Nankese and its environs, and to citizens and non-citizens of that catchment area, including those living outside Koforidua-Nankese, provided they are of good character. See “Who can join?” on the Membership page."],
   ["How do I open a savings account?", "First become a member: submit a written application, have it approved by the Committee of Management, pay the entrance fee and the minimum share capital. You can then open a savings account and make your opening deposit of [minimum amount]."],
   ["What documents are required?", "A valid ID [accepted types to be confirmed], a completed application form, and the name(s) of who should receive your shares/savings if you die. Each loan card lists any extra documents for that loan."],
   ["How do I apply for a loan?", "Loan applications must be in writing on the Society's prescribed form. Choose the loan you need on the Loans page and select Apply Now to send an enquiry, and our team will guide you through the formal application and approval by the Loans Committee."],
@@ -922,18 +922,18 @@ PAGES[""] = () => ({ title: "Home", desc: "Save with confidence, access affordab
   <div class="grid g3">${TESTIMONIALS.slice(0, 3).map(Testimonial).join("")}</div></div></section>
  ${CTA()}` });
 
-PAGES.about = () => ({ title: "About Us", desc: "A member-owned co-operative credit union serving Nankese and its environs, with a focus on women, youth and farmers.", html: `
- ${PageHead([["About Us"]], "About our credit union", "Peace & Love Co-operative Credit Union Ltd is a member-owned financial co-operative registered under the Co-operative Societies Decree, 1968, operating a credit-union-with-microfinance model in Nankese and its environs.")}
+PAGES.about = () => ({ title: "About Us", desc: "A member-owned co-operative credit union serving Koforidua-Nankese and its environs, with a focus on women, youth and farmers.", html: `
+ ${PageHead([["About Us"]], "About our credit union", "Peace & Love Co-operative Credit Union Ltd is a member-owned financial co-operative registered under the Co-operative Societies Decree, 1968, operating a credit-union-with-microfinance model in Koforidua-Nankese and its environs.")}
  <section class="section"><div class="wrap"><div class="grid g2">
   <div class="card pad"><span class="icon-badge">${I("shield", 26)}</span><h2 style="font-size:1.5rem;margin-top:1rem">Our mission</h2><p class="muted" style="margin:0">To enhance the socio-economic well-being of our target communities, with a focus on women and youth, by providing affordable, client-centred savings solutions and loan products.</p></div>
-  <div class="card pad"><span class="icon-badge icon-gold">${I("trending", 26)}</span><h2 style="font-size:1.5rem;margin-top:1rem">Our vision</h2><p class="muted" style="margin:0">To be the leading non-banking financial institution empowering businesses and individuals in Nankese and its surrounding communities, through accessible financial opportunities that foster growth and prosperity.</p></div></div></div></section>
+  <div class="card pad"><span class="icon-badge icon-gold">${I("trending", 26)}</span><h2 style="font-size:1.5rem;margin-top:1rem">Our vision</h2><p class="muted" style="margin:0">To be the leading non-banking financial institution empowering businesses and individuals in Koforidua-Nankese and its surrounding communities, through accessible financial opportunities that foster growth and prosperity.</p></div></div></div></section>
  <section class="section section-alt"><div class="wrap">${SecHead("Our core values", "As set out in our bye-laws.")}
   <div class="grid g3">${[["Member centric service", "Decisions and services are built around what our members need."], ["Education and empowerment", "We help members build the knowledge and confidence to manage their money well."], ["Accountability", "We are answerable to our members for how the Society is run and how funds are used."]].map(([t, d]) => `<div class="card pad"><h3>${t}</h3><p class="muted" style="margin:0">${d}</p></div>`).join("")}</div></div></section>
  <section class="section"><div class="wrap"><div class="split"><div><h2>Our history</h2><p class="muted">Peace & Love Co-operative Credit Union Ltd operates a Credit Union with Microfinance Orientation, registered under the Co-operative Societies Decree No. 252 of 1968 and its Regulations.</p></div>
   <ol class="timeline">${[["Registered", "[Year to be added]", "The Society was registered with the Registrar of Co-operative Societies, Ghana, and affiliated to the Ghana Co-operative Credit Union Association (CUA) Ltd."], ["Bye-laws adopted", "December 2024", "Members adopted the Society's current bye-laws and Articles of Association, setting out how the credit union is governed."], ["Today", "[Year to be added]", "[Describe where the credit union is now and what comes next.]"]].map(([t, y, d]) => `<li><b>${t} — ${fmt(y)}</b><span class="muted">${fmt(d)}</span></li>`).join("")}</ol></div></div></section>
  ${TeamSection()}
- <section class="section"><div class="wrap">${SecHead("Community involvement", "Our objectives place particular emphasis on women, youth and farmers in Nankese and its environs.")}
-  <div class="grid g3">${[["book", "Financial literacy", "We help members build good saving habits and understand credit, in line with our focus on education and empowerment."], ["sprout", "Supporting women and farmers", "Micro-credit helps productively poor women and farmers mobilise savings and grow into full credit-union membership."], ["home", "Serving Nankese and its environs", "Our services are rooted in Nankese and the surrounding communities we were established to serve."]].map(([i, t, d]) => `<div class="card pad"><span class="icon-badge icon-gold">${I(i, 26)}</span><h3 style="margin-top:1rem">${t}</h3><p class="muted" style="margin:0">${fmt(d)}</p></div>`).join("")}</div></div></section>
+ <section class="section"><div class="wrap">${SecHead("Community involvement", "Our objectives place particular emphasis on women, youth and farmers in Koforidua-Nankese and its environs.")}
+  <div class="grid g3">${[["book", "Financial literacy", "We help members build good saving habits and understand credit, in line with our focus on education and empowerment."], ["sprout", "Supporting women and farmers", "Micro-credit helps productively poor women and farmers mobilise savings and grow into full credit-union membership."], ["home", "Serving Koforidua-Nankese and its environs", "Our services are rooted in Koforidua-Nankese and the surrounding communities we were established to serve."]].map(([i, t, d]) => `<div class="card pad"><span class="icon-badge icon-gold">${I(i, 26)}</span><h3 style="margin-top:1rem">${t}</h3><p class="muted" style="margin:0">${fmt(d)}</p></div>`).join("")}</div></div></section>
  <section class="section section-alt"><div class="wrap">${WhyUs()}</div></section>${CTA()}` });
 
 PAGES.savings = () => ({ title: "Savings", desc: "Regular, Christmas, Children's and Special/Investment savings products for members.", html: `
@@ -1061,8 +1061,10 @@ async function initPlatform() {
     else ACCESS = "denied";
     if (DB) {
       const snap = await DB.doc("content/site").get(); if (snap.exists) { const data = snap.data(); if (data) applyContent(data); }
-      const q = await DB.collection("content/team").get();
-      q.docs.forEach(d => { const data = d.data(); if (!data) return; const i = TEAM.findIndex(x => x.id === d.id); if (i > -1) Object.assign(TEAM[i], data, { id: d.id }); else TEAM.push({ ...data, id: d.id }); });
+      try { // team members: one document each in the top-level "team" collection
+        const q = await DB.collection("team").get();
+        q.docs.forEach(d => { const data = d.data(); if (!data) return; const i = TEAM.findIndex(x => x.id === d.id); if (i > -1) Object.assign(TEAM[i], data, { id: d.id }); else TEAM.push({ ...data, id: d.id }); });
+      } catch (e) { /* keep the built-in team list */ }
     }
   } catch (e) { ACCESS = "denied"; }
   route(true);
@@ -1071,7 +1073,7 @@ function teamByCat(cat) { return TEAM.filter(m => m.category === cat).sort((a, b
 async function saveTeamMember(m) {
   const i = TEAM.findIndex(x => x.id === m.id); if (i > -1) Object.assign(TEAM[i], m); else TEAM.push(m);
   if (!DB) { toast("Previewing only — open the published link to save changes for visitors.", true); renderAdminTab("team"); return; }
-  try { await DB.collection("content/team").doc(m.id).set(m); toast("Saved — visitors will see the update."); }
+  try { await DB.collection("team").doc(m.id).set(m); toast("Saved — visitors will see the update."); }
   catch (e) {
     if (e && e.code === "invalid_argument") { ACCESS = "denied"; toast("You don't have permission to save changes here.", true); }
     else if (e && e.code === "quota_exceeded") toast("Couldn't save — storage limit reached. Try a smaller photo.", true);
@@ -1081,7 +1083,7 @@ async function saveTeamMember(m) {
 }
 async function deleteTeamMember(id) {
   const i = TEAM.findIndex(x => x.id === id); if (i > -1) TEAM.splice(i, 1);
-  if (DB) { try { await DB.collection("content/team").doc(id).delete(); toast("Member removed."); } catch (e) { toast("Couldn't delete. Please try again.", true); } }
+  if (DB) { try { await DB.collection("team").doc(id).delete(); toast("Member removed."); } catch (e) { toast("Couldn't delete. Please try again.", true); } }
   renderAdminTab("team");
 }
 function squarePhoto(file, size) {
