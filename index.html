@@ -547,11 +547,11 @@ const TESTIMONIALS = [
    category must be exactly one of TEAM_CATS. Edit, add or remove people
    from the Staff admin page (#/admin → "Leadership & Team") — changes
    there are saved for every visitor and do not require touching this code. */
-const TEAM_CATS = ["Board of Directors", "Management", "Staff"];
+const TEAM_CATS = ["Board of Directors", "Supervisory Committee", "Management"];
 const TEAM_CAT_DESC = {
   "Board of Directors": "Elected by members at the Annual General Meeting to set policy and provide strategic oversight of the Society.",
-  "Management": "Responsible for the day-to-day running of the credit union and for carrying out the Board's policies.",
-  "Staff": "The team members who serve members directly, every day, at the branch and behind the scenes."
+  "Supervisory Committee": "Elected by members to independently check the Society's books, records and operations, and to report its findings to members.",
+  "Management": "Responsible for the day-to-day running of the credit union and for carrying out the Board's policies."
 };
 const TEAM = [
   { id: "board-chair", category: "Board of Directors", order: 1, name: "Mrs. Comfort Aggor", title: "Chairperson", photo: CHAIR_IMG, bio: "Leads the Committee of Management and chairs meetings of the Board and the Annual General Meeting.", sample: false },
@@ -559,17 +559,12 @@ const TEAM = [
   { id: "board-secretary", category: "Board of Directors", order: 3, name: "Mrs. Gertrude Debrah", title: "Board Secretary", photo: SEC_IMG, bio: "Keeps the Society's official records, including minutes of Board and general meetings.", sample: false },
   { id: "board-treasurer", category: "Board of Directors", order: 4, name: "[Name to be added]", title: "Treasurer", photo: "", bio: "Oversees the Society's finances and reports on its financial position to the Board and members.", sample: true },
   { id: "board-member1", category: "Board of Directors", order: 5, name: "Mrs. Comfort Boateng", title: "Board Member", photo: MEM1_IMG, bio: "Contributes to policy decisions and strategic oversight of the Society on behalf of members.", sample: false },
-  { id: "mgmt-general", category: "Management", order: 1, name: "Mr. Kingsley Kwaah Tandoh", title: "General Manager", photo: GM_IMG, bio: "Responsible for the overall day-to-day management and performance of the credit union.", sample: false },
-  { id: "mgmt-operations", category: "Management", order: 2, name: "[Name to be added]", title: "Operations Manager", photo: "", bio: "Oversees daily operations, service delivery and internal processes across the Society.", sample: true },
-  { id: "mgmt-finance", category: "Management", order: 3, name: "[Name to be added]", title: "Finance Manager", photo: "", bio: "Manages the Society's accounts, financial reporting and regulatory compliance.", sample: true },
-  { id: "mgmt-loans", category: "Management", order: 4, name: "[Name to be added]", title: "Loans Manager", photo: "", bio: "Oversees loan appraisal, disbursement and portfolio quality, working with the Loans Committee.", sample: true },
-  { id: "mgmt-branch", category: "Management", order: 5, name: "[Name to be added]", title: "Branch Manager", photo: "", bio: "Manages day-to-day service at the branch and supports members with their accounts and enquiries.", sample: true },
-  { id: "staff-accountant", category: "Staff", order: 1, name: "[Name to be added]", title: "Accountant", photo: "", bio: "Maintains the Society's financial records and prepares reports for management and the Board.", sample: true },
-  { id: "staff-loan-officer", category: "Staff", order: 2, name: "[Name to be added]", title: "Loan Officer", photo: "", bio: "Guides members through loan applications and helps assess loan requests.", sample: true },
-  { id: "staff-cso", category: "Staff", order: 3, name: "[Name to be added]", title: "Customer Service Officer", photo: "", bio: "The first point of contact for members — answering questions and helping with everyday transactions.", sample: true },
-  { id: "staff-cashier", category: "Staff", order: 4, name: "[Name to be added]", title: "Cashier", photo: "", bio: "Handles deposits, withdrawals and other over-the-counter transactions for members.", sample: true },
-  { id: "staff-admin-officer", category: "Staff", order: 5, name: "[Name to be added]", title: "Administrative Officer", photo: "", bio: "Supports the Society's day-to-day administration, records and member communications.", sample: true },
-  { id: "staff-other", category: "Staff", order: 6, name: "[Name to be added]", title: "Other Staff", photo: "", bio: "Additional team members who help the Society serve its members well.", sample: true }
+  { id: "sup-chair", category: "Supervisory Committee", order: 1, name: "[Name to be added]", title: "Chairman", photo: "", bio: "Leads the Supervisory Committee in checking that the Society's accounts, records and operations follow the bye-laws and approved policies.", sample: true },
+  { id: "sup-secretary", category: "Supervisory Committee", order: 2, name: "[Name to be added]", title: "Secretary", photo: "", bio: "Keeps the Supervisory Committee's minutes and prepares its reports to the Board and members.", sample: true },
+  { id: "sup-member", category: "Supervisory Committee", order: 3, name: "[Name to be added]", title: "Member", photo: "", bio: "Takes part in the Supervisory Committee's reviews of the Society's books, loans and procedures on behalf of members.", sample: true },
+  { id: "mgmt-general", category: "Management", order: 1, name: "Mr. Kingsley Kwaah Tandoh", title: "Manager", photo: GM_IMG, bio: "Responsible for the overall day-to-day management and performance of the credit union.", sample: false },
+  { id: "mgmt-credit", category: "Management", order: 2, name: "[Name to be added]", title: "Head of Credit", photo: "", bio: "Oversees loan appraisal, disbursement and recovery, working with the Loans Committee to keep the loan portfolio healthy.", sample: true },
+  { id: "mgmt-it", category: "Management", order: 3, name: "[Name to be added]", title: "IT Officer", photo: "", bio: "Looks after the Society's computer systems, data security and website.", sample: true }
 ];
 
 const FAQS = [
@@ -814,7 +809,7 @@ const TeamCategory = cat => {
   const members = TEAM.filter(m => m.category === cat).sort((a, b) => a.order - b.order);
   if (!members.length) return "";
   return `<div class="team-cat"><h3 class="team-cat-h">${esc(cat)}</h3><p class="muted team-cat-desc">${esc(TEAM_CAT_DESC[cat] || "")}</p>
-   <div class="grid g4 team-grid">${members.map(TeamCard).join("")}</div></div>`;
+   <div class="grid ${members.length <= 3 ? "g3" : "g4"} team-grid">${members.map(TeamCard).join("")}</div></div>`;
 };
 
 const TeamSection = () => `<section class="section section-alt" id="team"><div class="wrap">
