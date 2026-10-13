@@ -459,6 +459,10 @@ const SAVINGS = [
 ];
 
 const LOANS = [
+  { id: "personal", icon: "users", name: "Personal Loan", tag: "For personal and household needs.",
+    amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
+    elig: "Open to members in good standing. Members in their first six months of membership may borrow only up to the amount of their own savings.",
+    docs: ["Completed loan application form", "Valid ID [accepted types]", "Proof of income (e.g. payslip or business records)", "Guarantor's savings pledged as security, or another form of security accepted by the Board"] },
   { id: "business", icon: "briefcase", name: "Business Loan", tag: "For entrepreneurs and small businesses.",
     amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
     elig: "Open to members in good standing. Members in their first six months of membership may borrow only up to the amount of their own savings.",
@@ -957,7 +961,7 @@ PAGES.savings = () => ({ title: "Savings", desc: "Regular Savings, Susu Account,
    <li><div><h3>Choose a savings product</h3><p>Pick the account that suits your goal and tell us how much you would like to start with.</p></div></li>
    <li><div><h3>Make your first deposit</h3><p>Pay in at least the minimum opening amount of ${fmt("GH₵ XX")} at a branch ${fmt("[or through the payment channels you support]")}.</p></div></li></ol></div></div></section>${CTA()}` });
 
-PAGES.loans = () => ({ title: "Loans", desc: "Business, micro, agric, funeral and group loans, plus a loan calculator.", html: `
+PAGES.loans = () => ({ title: "Loans", desc: "Personal, business, micro, agric, funeral and group loans, plus a loan calculator.", html: `
  ${PageHead([["Loans"]], "Loans built around your needs", "Borrow for what matters, on terms you understand. Compare our loans, then use the calculator to plan your repayments.")}
  <section class="section"><div class="wrap"><div class="notice" style="margin-bottom:2rem">${I("alert")}<p style="margin:0">Loan amounts, periods, rates and requirements shown as <b>XX</b> or in [brackets] are placeholders. Applying does not guarantee approval.</p></div>
   <div class="grid g2">${LOANS.map(LoanCard).join("")}</div></div></section>
