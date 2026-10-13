@@ -447,38 +447,38 @@ const SAVINGS = [
   { id: "regular", icon: "wallet", name: "Regular Savings", tag: "Build a strong financial foundation with convenient and flexible savings.",
     open: "GH₵ XX", bal: "GH₵ XX", rate: "Interest Rate: XX% (competitive, set by the Board of Directors and credited to your account semi-annually)",
     wd: "Withdrawals can be made when the office is open. Amounts above the Society's usual cash on hand need three days' notice. Savings pledged as security for a loan cannot be withdrawn until released.", elig: "Open to all members in good standing." },
-  { id: "christmas", icon: "gift", name: "Christmas Savings", tag: "Prepare for the festive season by saving throughout the year.",
+  { id: "susu", icon: "clock", name: "Susu Account", tag: "Save small amounts daily or weekly and watch them add up — ideal for traders and the self-employed.",
     open: "GH₵ XX", bal: "GH₵ XX", rate: "Interest Rate: XX% (competitive, set by the Board of Directors)",
-    wd: "[Payout date to be confirmed.] The same general withdrawal rules apply: notice is required for amounts above the Society's usual cash on hand, and savings held as loan security cannot be withdrawn until released.", elig: "Open to all members in good standing." },
-  { id: "children", icon: "smile", name: "Children's Savings", tag: "Give your children a head start toward a brighter financial future.",
+    wd: "[Contribution schedule, collection arrangements and payout terms to be confirmed.] The same general withdrawal rules apply: notice is required for amounts above the Society's usual cash on hand, and savings held as loan security cannot be withdrawn until released.", elig: "Open to all members in good standing." },
+  { id: "children", icon: "smile", name: "PLCCU Kids Account", tag: "Give your children a head start toward a brighter financial future.",
     open: "GH₵ XX", bal: "GH₵ XX", rate: "Interest Rate: XX% (competitive, set by the Board of Directors)",
     wd: "[Guardian authorisation and withdrawal conditions to be confirmed.]", elig: "[Children under [age] with a parent or guardian who is a member – confirm.]" },
-  { id: "special", icon: "trending", name: "Special / Investment Savings", tag: "Save toward your long-term financial goals.",
+  { id: "group", icon: "users", name: "Group Savings Account", tag: "For associations, groups and societies saving together toward shared goals.",
     open: "GH₵ XX", bal: "GH₵ XX", rate: "Interest Rate: XX% (competitive, set by the Board of Directors)",
-    wd: "[Fixed term / notice period and early-exit conditions to be confirmed.] Under the bye-laws, one member's total savings may not exceed 49% of the Society's total savings.", elig: "[Members meeting the minimum deposit and term – confirm.]" }
+    wd: "[Signatories and withdrawal authorisation for groups to be confirmed.] The same general withdrawal rules apply: notice is required for amounts above the Society's usual cash on hand, and savings held as loan security cannot be withdrawn until released.", elig: "[Groups and associations whose members meet the Society's requirements – confirm.]" }
 ];
 
 const LOANS = [
-  { id: "personal", icon: "users", name: "Personal Loan", tag: "For personal and household needs.",
-    amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
-    elig: "Open to members in good standing. Members in their first six months of membership may borrow only up to the amount of their own savings.",
-    docs: ["Completed loan application form", "Valid ID [accepted types]", "Proof of income (e.g. payslip or business records)", "Guarantor's savings pledged as security, or another form of security accepted by the Board"] },
   { id: "business", icon: "briefcase", name: "Business Loan", tag: "For entrepreneurs and small businesses.",
     amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
     elig: "Open to members in good standing. Members in their first six months of membership may borrow only up to the amount of their own savings.",
     docs: ["Completed loan application form", "Valid ID [accepted types]", "Business registration or proof of trading", "Business records / cash-flow summary", "Guarantor's savings pledged as security, or another form of security accepted by the Board"] },
-  { id: "emergency", icon: "zap", name: "Emergency Loan", tag: "For urgent financial needs.",
+  { id: "micro", icon: "banknote", name: "Micro-Loan", tag: "Small, quick loans for petty traders and micro-enterprises.",
+    amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
+    elig: "Open to members in good standing. Members in their first six months of membership may borrow only up to the amount of their own savings.",
+    docs: ["Completed loan application form", "Valid ID [accepted types]", "Proof of trading or source of income", "Guarantor's savings pledged as security, or another form of security accepted by the Board"] },
+  { id: "agric", icon: "sprout", name: "Agric Loan", tag: "For farmers — inputs, planting, harvesting and agro-processing.",
+    amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
+    elig: "Open to members in good standing. Members in their first six months of membership may borrow only up to the amount of their own savings.",
+    docs: ["Completed loan application form", "Valid ID [accepted types]", "Details of the farm or agricultural activity", "[Repayment schedule aligned to the harvest – confirm]", "Guarantor's savings pledged as security, or another form of security accepted by the Board"] },
+  { id: "funeral", icon: "umbrella", name: "Funeral Loan", tag: "To help members meet funeral expenses for loved ones.",
     amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
     elig: "Open to members in good standing with the required savings balance.",
-    docs: ["Completed loan application form", "Valid ID [accepted types]", "Supporting evidence of the emergency [if applicable]"] },
-  { id: "education", icon: "grad", name: "Education Loan", tag: "For school fees and educational expenses.",
+    docs: ["Completed loan application form", "Valid ID [accepted types]", "[Supporting evidence, e.g. funeral announcement – confirm]", "Guarantor's savings pledged as security, or another form of security accepted by the Board"] },
+  { id: "group", icon: "users", name: "Group Loan", tag: "For groups of members who guarantee one another's loans.",
     amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
-    elig: "Open to members in good standing paying fees for themselves or a dependant.",
-    docs: ["Completed loan application form", "Valid ID [accepted types]", "Fee invoice or admission letter", "Proof of income", "Guarantor's savings pledged as security, or another form of security accepted by the Board"] },
-  { id: "asset", icon: "car", name: "Asset / Vehicle Loan", tag: "For purchasing productive assets or vehicles.",
-    amt: "GH₵ XX – GH₵ XX", term: "Up to 24 months (the maximum loan term under our bye-laws)", rate: "Interest Rate: XX%, set by the Board of Directors",
-    elig: "Open to members in good standing meeting the Society's savings and membership-period requirements.",
-    docs: ["Completed loan application form", "Valid ID [accepted types]", "Supplier quotation or pro-forma invoice", "Proof of income", "Security / insurance details [if required]"] }
+    elig: "[Groups of members in good standing – group size and requirements to be confirmed.]",
+    docs: ["Completed group loan application form", "Valid ID for each group member [accepted types]", "[Group registration or constitution – confirm]", "Group guarantee signed by all members"] }
 ];
 
 const BENEFITS = [
@@ -587,7 +587,7 @@ const FAQS = [
   ["What documents are required?", "A valid ID [accepted types to be confirmed], a completed application form, and the name(s) of who should receive your shares/savings if you die. Each loan card lists any extra documents for that loan."],
   ["How do I apply for a loan?", "Loan applications must be in writing on the Society's prescribed form. Choose the loan you need on the Loans page and select Apply Now to send an enquiry, and our team will guide you through the formal application and approval by the Loans Committee."],
   ["How long does loan approval take?", "Approval depends on the Loans Committee's review of your application and security, and on whether your documents are complete. [Typical timing to be confirmed.]"],
-  ["What are the available savings products?", "Regular Savings, Christmas Savings, Children's Savings and Special / Investment Savings. Details, minimum amounts and conditions are on the Savings page."],
+  ["What are the available savings products?", "Regular Savings, the Susu Account, the PLCCU Kids Account and the Group Savings Account. Details, minimum amounts and conditions are on the Savings page."],
   ["What happens if I miss a loan repayment?", "Contact us as early as you can. Collection costs become payable by the borrower, and a fine of up to 10% per year may apply to the unpaid balance. We would rather agree a plan with you than see arrears grow."],
   ["How can I contact customer service?", "Call +233 54 848 1006, 024 545 7429 or 024 303 4630, email plccu2025@gmail.com, or visit our office in Koforidua-Nankese, near Old Emmanuel Vocational School, Monday to Friday, 8:30am – 5:00pm. All details are on the Contact page."],
   ["Can I access my account online?", "The Member Portal is coming soon. Until then, please visit a branch or contact us for balances and statements."],
@@ -945,7 +945,7 @@ PAGES.about = () => ({ title: "About Us", desc: "A member-owned co-operative cre
   <div class="grid g3">${[["book", "Financial literacy", "We help members build good saving habits and understand credit, in line with our focus on education and empowerment."], ["sprout", "Supporting women and farmers", "Micro-credit helps productively poor women and farmers mobilise savings and grow into full credit-union membership."], ["home", "Serving Koforidua-Nankese and its environs", "Our services are rooted in Koforidua-Nankese and the surrounding communities we were established to serve."]].map(([i, t, d]) => `<div class="card pad"><span class="icon-badge icon-gold">${I(i, 26)}</span><h3 style="margin-top:1rem">${t}</h3><p class="muted" style="margin:0">${fmt(d)}</p></div>`).join("")}</div></div></section>
  <section class="section section-alt"><div class="wrap">${WhyUs()}</div></section>${CTA()}` });
 
-PAGES.savings = () => ({ title: "Savings", desc: "Regular, Christmas, Children's and Special/Investment savings products for members.", html: `
+PAGES.savings = () => ({ title: "Savings", desc: "Regular Savings, Susu Account, PLCCU Kids Account and Group Savings Account for members.", html: `
  ${PageHead([["Savings"]], "Savings that grow with you", "Choose the savings product that fits your goals. Save a little at a time and watch it add up.")}
  <section class="section"><div class="wrap"><div class="notice" style="margin-bottom:2rem">${I("alert")}<p style="margin:0">Interest rates, minimum amounts and conditions shown as <b>XX</b> or in [brackets] are placeholders until the credit union confirms them.</p></div>
   <div class="grid g2">${SAVINGS.map(SavingsCard).join("")}</div></div></section>
@@ -957,7 +957,7 @@ PAGES.savings = () => ({ title: "Savings", desc: "Regular, Christmas, Children's
    <li><div><h3>Choose a savings product</h3><p>Pick the account that suits your goal and tell us how much you would like to start with.</p></div></li>
    <li><div><h3>Make your first deposit</h3><p>Pay in at least the minimum opening amount of ${fmt("GH₵ XX")} at a branch ${fmt("[or through the payment channels you support]")}.</p></div></li></ol></div></div></section>${CTA()}` });
 
-PAGES.loans = () => ({ title: "Loans", desc: "Personal, business, emergency, education and asset loans, plus a loan calculator.", html: `
+PAGES.loans = () => ({ title: "Loans", desc: "Business, micro, agric, funeral and group loans, plus a loan calculator.", html: `
  ${PageHead([["Loans"]], "Loans built around your needs", "Borrow for what matters, on terms you understand. Compare our loans, then use the calculator to plan your repayments.")}
  <section class="section"><div class="wrap"><div class="notice" style="margin-bottom:2rem">${I("alert")}<p style="margin:0">Loan amounts, periods, rates and requirements shown as <b>XX</b> or in [brackets] are placeholders. Applying does not guarantee approval.</p></div>
   <div class="grid g2">${LOANS.map(LoanCard).join("")}</div></div></section>
