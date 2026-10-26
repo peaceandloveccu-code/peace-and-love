@@ -1068,38 +1068,125 @@ const NOTFOUND = () => ({ title: "Page not found", desc: "", html: `${PageHead([
    so every visitor sees the update. Access is granted by the artifact's own
    sharing permissions (Editor/Contributor and above), not a site password.
    ===================================================================== */
-let ACCESS = "checking", DB = null, ADMIN_TAB = "contact";
-async function initPlatform() {
+/* ---- Storage ---------------------------------------------------------
+   Content lives in Supabase (project "plccu"). The publishable key below is
+   meant to be public: Row Level Security in the database only lets signed-in
+   staff on the "admins" list change anything. If Supabase can't be reached
+   (e.g. inside a sandboxed preview) the Claude artifact's own storage is used. */
+const SUPABASE = { url: "https://uvjzbxmccwwqivlynhsm.supabase.co", key: "sb_publishable_Tpycfn8vgvbAi3xlAaRnxA_buBC4R96" };
+let ACCESS = "checking", DB = null, BACKEND = null, SB_SESSION = null, ADMIN_TAB = "contact";
+const SB_STORE = "plccu.session";
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+
+async function sbFetch(path, { method = "GET", body, headers = {}, timeout = 10000 } = {}) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), timeout);
+  const hdr = { apikey: SUPABASE.key, "Content-Type": "application/json", ...headers };
+  if (SB_SESSION && !path.startsWith("/auth/v1/token")) hdr.Authorization = "Bearer " + SB_SESSION.access_token;
   try {
-    const user = await claude.use("user");
-    DB = await claude.use("db");
-    if (user) { const can = await user.can("data.write"); ACCESS = can === false ? "denied" : "granted"; } // null = platform said nothing: stay optimistic, let a refused write decide
-    else ACCESS = "denied";
-    if (DB) {
-      const snap = await DB.doc("content/site").get(); if (snap.exists) { const data = snap.data(); if (data) applyContent(data); }
-      try { // team members: one document each in the top-level "team" collection
-        const q = await DB.collection("team").get();
-        q.docs.forEach(d => { const data = d.data(); if (!data) return; const i = TEAM.findIndex(x => x.id === d.id); if (i > -1) Object.assign(TEAM[i], data, { id: d.id }); else TEAM.push({ ...data, id: d.id }); });
-      } catch (e) { /* keep the built-in team list */ }
-    }
-  } catch (e) { ACCESS = "denied"; }
-  route(true);
+    const res = await fetch(SUPABASE.url + path, { method, headers: hdr, body: body === undefined ? undefined : JSON.stringify(body), signal: ctl.signal });
+    const text = await res.text(); let data = null; try { data = text ? JSON.parse(text) : null; } catch (e) {}
+    if (!res.ok) { const err = new Error((data && (data.message || data.msg || data.error_description || data.error)) || "HTTP " + res.status); err.status = res.status; err.code = data && (data.code || data.error_code); throw err; }
+    return data;
+  } finally { clearTimeout(timer); }
 }
+function sbKeep(s) {
+  SB_SESSION = s ? { access_token: s.access_token, refresh_token: s.refresh_token, expires_at: s.expires_at || Math.floor(Date.now() / 1000) + (s.expires_in || 3600), user: s.user ? { id: s.user.id, email: s.user.email } : null } : null;
+  lsSet(SB_STORE, SB_SESSION ? JSON.stringify(SB_SESSION) : null);
+}
+async function sbFresh() {
+  if (!SB_SESSION) return;
+  if (SB_SESSION.expires_at - 60 > Date.now() / 1000) return;
+  try { sbKeep(await sbFetch("/auth/v1/token?grant_type=refresh_token", { method: "POST", body: { refresh_token: SB_SESSION.refresh_token } })); }
+  catch (e) { sbKeep(null); }
+}
+async function sbSignIn(email, password) { sbKeep(await sbFetch("/auth/v1/token?grant_type=password", { method: "POST", body: { email, password } })); }
+async function sbSignOut() { try { await sbFetch("/auth/v1/logout", { method: "POST" }); } catch (e) {} sbKeep(null); }
+async function sbIsAdmin() {
+  if (!SB_SESSION || !SB_SESSION.user) return false;
+  const rows = await sbFetch(`/rest/v1/admins?select=user_id&user_id=eq.${encodeURIComponent(SB_SESSION.user.id)}`);
+  return Array.isArray(rows) && rows.length > 0;
+}
+async function sbUpsert(table, rows) {
+  await sbFresh();
+  return sbFetch(`/rest/v1/${table}`, { method: "POST", body: rows, headers: { Prefer: "resolution=merge-duplicates,return=minimal" } });
+}
+function applyTeamRows(rows) {
+  rows.forEach(r => {
+    const i = TEAM.findIndex(x => x.id === r.id);
+    if (r.deleted) { if (i > -1) TEAM.splice(i, 1); return; }
+    const m = { id: r.id, name: r.name, title: r.title, category: r.category, bio: r.bio, photo: r.photo, order: r.order, sample: false };
+    if (i > -1) Object.assign(TEAM[i], m); else TEAM.push(m);
+  });
+}
+async function adminAccessFromSession() { ACCESS = SB_SESSION ? ((await sbIsAdmin()) ? "granted" : "notadmin") : "login"; }
+
+async function initPlatform() {
+  // 1) Supabase
+  try {
+    const saved = lsGet(SB_STORE); if (saved) { try { SB_SESSION = JSON.parse(saved); } catch (e) { SB_SESSION = null; } }
+    await sbFresh();
+    const [site, team] = await Promise.all([
+      sbFetch("/rest/v1/site_content?id=eq.site&select=data"),
+      sbFetch("/rest/v1/team_members?select=id,name,title,category,bio,photo,sort_order,deleted")
+    ]);
+    BACKEND = "supabase";
+    if (Array.isArray(site) && site[0] && site[0].data) applyContent(site[0].data);
+    if (Array.isArray(team)) applyTeamRows(team.map(r => ({ ...r, order: r.sort_order })));
+    try { await adminAccessFromSession(); } catch (e) { ACCESS = "login"; }
+    renderChrome(); route(true); return;
+  } catch (e) { BACKEND = null; }
+  // 2) Claude artifact storage
+  if (typeof claude !== "undefined") {
+    try {
+      const user = await claude.use("user");
+      DB = await claude.use("db");
+      if (user) { const can = await user.can("data.write"); ACCESS = can === false ? "denied" : "granted"; } // null = platform said nothing: stay optimistic, let a refused write decide
+      else ACCESS = "denied";
+      if (DB) {
+        BACKEND = "claude";
+        const snap = await DB.doc("content/site").get(); if (snap.exists) { const data = snap.data(); if (data) applyContent(data); }
+        try { // team members: one document each in the top-level "team" collection
+          const q = await DB.collection("team").get();
+          applyTeamRows(q.docs.map(d => ({ ...(d.data() || {}), id: d.id })).filter(r => r.category || r.deleted));
+        } catch (e) { /* keep the built-in team list */ }
+      }
+    } catch (e) { ACCESS = "denied"; }
+    renderChrome(); route(true); return;
+  }
+  ACCESS = "unavailable"; route(true);
+}
+function renderChrome() { $("#app-header").innerHTML = Header(); $("#app-footer").innerHTML = Footer(); $("#fab-slot").innerHTML = Fab(); }
 function teamByCat(cat) { return TEAM.filter(m => m.category === cat).sort((a, b) => a.order - b.order); }
+const teamRow = (m, deleted) => ({ id: m.id, name: m.name || "", title: m.title || "", category: m.category, bio: m.bio || "", photo: m.photo || "", sort_order: Number(m.order) || 0, deleted: !!deleted });
+function saveFailed(e) {
+  if (e && (e.status === 401 || e.status === 403 || e.code === "42501" || e.code === "invalid_argument")) {
+    if (BACKEND === "supabase") { toast("Your sign-in has expired or this account can't make changes. Please sign in again.", true); sbKeep(null); ACCESS = "login"; }
+    else { ACCESS = "denied"; toast("You don't have permission to save changes here.", true); }
+    if (location.hash.replace(/^#\/?/, "").split("/")[0] === "admin") route(true);
+    return true;
+  }
+  if (e && e.code === "quota_exceeded") { toast("Couldn't save — storage limit reached. Try a smaller photo.", true); return true; }
+  toast("Couldn't save. Please check your connection and try again.", true); return true;
+}
 async function saveTeamMember(m) {
   const i = TEAM.findIndex(x => x.id === m.id); if (i > -1) Object.assign(TEAM[i], m); else TEAM.push(m);
-  if (!DB) { toast("Previewing only — open the published link to save changes for visitors.", true); renderAdminTab("team"); return; }
-  try { await DB.collection("team").doc(m.id).set(m); toast("Saved — visitors will see the update."); }
-  catch (e) {
-    if (e && e.code === "invalid_argument") { ACCESS = "denied"; toast("You don't have permission to save changes here.", true); }
-    else if (e && e.code === "quota_exceeded") toast("Couldn't save — storage limit reached. Try a smaller photo.", true);
-    else toast("Couldn't save. Please try again.", true);
-  }
+  try {
+    if (BACKEND === "supabase") await sbUpsert("team_members", [teamRow(m)]);
+    else if (BACKEND === "claude") await DB.collection("team").doc(m.id).set(m);
+    else { toast("Previewing only — changes can't be saved here.", true); renderAdminTab("team"); return; }
+    toast("Saved — visitors will see the update.");
+  } catch (e) { saveFailed(e); }
   renderAdminTab("team");
 }
 async function deleteTeamMember(id) {
-  const i = TEAM.findIndex(x => x.id === id); if (i > -1) TEAM.splice(i, 1);
-  if (DB) { try { await DB.collection("team").doc(id).delete(); toast("Member removed."); } catch (e) { toast("Couldn't delete. Please try again.", true); } }
+  const i = TEAM.findIndex(x => x.id === id); const m = i > -1 ? TEAM[i] : null; if (i > -1) TEAM.splice(i, 1);
+  try {
+    // keep a "deleted" marker so built-in members stay removed after a reload
+    if (BACKEND === "supabase" && m) await sbUpsert("team_members", [teamRow(m, true)]);
+    else if (BACKEND === "claude" && m) await DB.collection("team").doc(id).set({ id, deleted: true });
+    if (BACKEND) toast("Member removed.");
+  } catch (e) { saveFailed(e); }
   renderAdminTab("team");
 }
 function squarePhoto(file, size) {
@@ -1127,14 +1214,16 @@ function applyContent(d) {
 }
 async function saveContent(partial) {
   applyContent(partial);
-  if (!DB) { toast("Previewing only — open the published link to save changes for visitors.", true); return; }
   const body = { config: { ...CONFIG }, savings: SAVINGS, loans: LOANS, news: NEWS, testimonials: TESTIMONIALS, faqs: FAQS, articles: ARTICLES };
-  if (new Blob([JSON.stringify(body)]).size > 240000) { toast("Too much to save at once — remove a testimonial photo or two and try again.", true); return; }
-  try { await DB.doc("content/site").set(body); toast("Saved — visitors will see the update."); }
-  catch (e) {
-    if (e && e.code === "invalid_argument") { ACCESS = "denied"; toast("You don't have permission to save changes here.", true); if (location.hash.replace(/^#\/?/, "").split("/")[0] === "admin") route(true); }
-    else toast("Couldn't save. Please try again.", true);
-  }
+  try {
+    if (BACKEND === "supabase") await sbUpsert("site_content", [{ id: "site", data: body }]);
+    else if (BACKEND === "claude") {
+      if (new Blob([JSON.stringify(body)]).size > 240000) { toast("Too much to save at once — remove a testimonial photo or two and try again.", true); return; }
+      await DB.doc("content/site").set(body);
+    } else { toast("Previewing only — changes can't be saved here.", true); return; }
+    renderChrome(); route(true);
+    toast("Saved — visitors will see the update.");
+  } catch (e) { saveFailed(e); }
 }
 const ADMIN_TABS = [["contact", "Contact & Settings"], ["team", "Leadership & Team"], ["savings", "Savings"], ["loans", "Loans"], ["news", "News"], ["education", "Education"], ["testimonials", "Testimonials"], ["faq", "FAQ"]];
 const ADMIN_FIELDS = {
@@ -1247,12 +1336,22 @@ function adminSubmit(form) {
   renderAdminTab(key);
 }
 PAGES.admin = () => {
-  if (ACCESS !== "granted") {
-    const msg = ACCESS === "checking" ? "Checking your access…" : "You need edit access to this page to use the admin dashboard. Ask the site owner to share edit (Contributor) access with your account, then reload this page.";
-    return { title: "Admin", desc: "", nav: "", html: `${PageHead([["Admin"]], "Staff admin", "")}<section class="section"><div class="wrap"><div class="notice">${I("lock")}<p style="margin:0">${esc(msg)}</p></div><p style="margin-top:1.4rem"><a class="btn btn-outline" href="#/">Back to the site</a></p></div></section>` };
-  }
+  const shell = inner => ({ title: "Admin", desc: "", nav: "", html: `${PageHead([["Admin"]], "Staff admin", "")}<section class="section"><div class="wrap">${inner}</div></section>` });
+  const note = msg => `<div class="notice">${I("lock")}<p style="margin:0">${esc(msg)}</p></div><p style="margin-top:1.4rem"><a class="btn btn-outline" href="#/">Back to the site</a></p>`;
+  if (ACCESS === "checking") return shell(note("Checking your access…"));
+  if (ACCESS === "unavailable") return shell(note("The admin dashboard can't reach the website's database right now. Check your internet connection and reload this page."));
+  if (ACCESS === "login") return shell(`<div class="card pad" style="max-width:28rem"><h2 style="font-size:1.4rem">Staff sign in</h2>
+    <p class="muted">Sign in with the staff account set up for you in Supabase.</p>
+    <form data-staff-login novalidate><div class="field"><label for="sl-email">Email</label><input id="sl-email" name="email" type="email" autocomplete="username" required></div>
+    <div class="field" style="margin-top:1rem"><label for="sl-pw">Password</label><input id="sl-pw" name="password" type="password" autocomplete="current-password" required></div>
+    <p class="err" data-login-err hidden></p>
+    <button class="btn btn-primary" type="submit" style="margin-top:1.2rem">Sign in</button></form>
+    <p class="help" style="margin-top:1rem">Forgotten your password? Ask the site owner to reset it in Supabase.</p></div>`);
+  if (ACCESS === "notadmin") return shell(`${note("You're signed in" + (SB_SESSION && SB_SESSION.user ? " as " + SB_SESSION.user.email : "") + ", but this account isn't on the staff list, so it can't change the website. Ask the site owner to add you.")}<p style="margin-top:.8rem"><button class="btn btn-outline btn-sm" type="button" data-staff-logout>Sign out</button></p>`);
+  if (ACCESS !== "granted") return shell(note("You need edit access to this page to use the admin dashboard. Ask the site owner to share edit (Contributor) access with your account, then reload this page."));
+  const who = BACKEND === "supabase" && SB_SESSION && SB_SESSION.user ? `<p class="row" style="justify-content:space-between;margin:0 0 1.2rem"><span class="muted">Signed in as <b>${esc(SB_SESSION.user.email || "")}</b></span><button class="btn btn-outline btn-sm" type="button" data-staff-logout>Sign out</button></p>` : "";
   return { title: "Admin", desc: "", nav: "", html: `${PageHead([["Admin"]], "Staff admin", "Update site content below. Changes are saved for every visitor.")}
-   <section class="section"><div class="wrap"><div class="chips" role="tablist" aria-label="Admin sections">${ADMIN_TABS.map(([k, l]) => `<button class="chip" type="button" data-admin-tab="${k}" aria-pressed="${k === ADMIN_TAB}">${l}</button>`).join("")}</div>
+   <section class="section"><div class="wrap">${who}<div class="chips" role="tablist" aria-label="Admin sections">${ADMIN_TABS.map(([k, l]) => `<button class="chip" type="button" data-admin-tab="${k}" aria-pressed="${k === ADMIN_TAB}">${l}</button>`).join("")}</div>
     <div id="admin-panel"></div></div></section>` };
 };
 
@@ -1401,6 +1500,7 @@ document.addEventListener("click", e => {
   else if (t.matches("[data-add-row]")) { const form = t.closest("form"), key = form.dataset.adminSave; syncDynDraft(key, form); window.__draft[key].push(ADMIN_BLANK[key]()); renderAdminTab(key); }
   else if (t.matches("[data-remove-row]")) { const form = t.closest("form"), key = form.dataset.adminSave; syncDynDraft(key, form); window.__draft[key].splice(+t.dataset.removeRow, 1); renderAdminTab(key); }
   else if (t.matches("[data-view-profile]")) openProfile(t.dataset.viewProfile);
+  else if (t.matches("[data-staff-logout]")) { sbSignOut().then(() => { ACCESS = "login"; route(true); toast("Signed out."); }); }
   else if (t.matches("[data-team-add]")) {
     const cat = t.dataset.teamAdd, siblings = teamByCat(cat), order = siblings.length ? Math.max(...siblings.map(m => m.order)) + 1 : 1;
     TEAM.push({ id: uid("team"), category: cat, order, name: "[Name to be added]", title: "", bio: "", photo: "", sample: false });
@@ -1422,6 +1522,14 @@ document.addEventListener("submit", e => {
   else if (f.matches("[data-calc]")) { e.preventDefault(); calc(f); }
   else if (f.matches("[data-admin-save]")) { e.preventDefault(); adminSubmit(f); }
   else if (f.matches("[data-team-save]")) { e.preventDefault(); teamFormSubmit(f); }
+  else if (f.matches("[data-staff-login]")) {
+    e.preventDefault();
+    const err = $("[data-login-err]", f), btn = $('button[type="submit"]', f), email = f.elements.email.value.trim(), pw = f.elements.password.value;
+    if (!email || !pw) { err.textContent = "Enter your email and password."; err.hidden = false; return; }
+    btn.disabled = true; btn.textContent = "Signing in…"; err.hidden = true;
+    sbSignIn(email, pw).then(adminAccessFromSession).then(() => route(true))
+      .catch(x => { btn.disabled = false; btn.textContent = "Sign in"; err.textContent = x && x.status === 400 ? "Incorrect email or password." : "Couldn't sign in. Check your connection and try again."; err.hidden = false; });
+  }
 });
 document.addEventListener("input", e => {
   const el = e.target;
@@ -1456,11 +1564,9 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu();
 /* =====================================================================
    8. START
    ===================================================================== */
-$("#app-header").innerHTML = Header();
-$("#app-footer").innerHTML = Footer();
-$("#fab-slot").innerHTML = Fab();
+renderChrome();
 route();
-if (typeof claude !== "undefined") initPlatform(); else ACCESS = "denied";
+initPlatform();
 </script>
 </body>
 </html>
