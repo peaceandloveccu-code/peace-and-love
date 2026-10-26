@@ -695,7 +695,7 @@ const contactLink = (kind, val, label) => /\[/.test(val) ? `<span>${fmt(val)}</s
   `<a href="${kind === "tel" ? "tel:" + esc(val.replace(/\s/g, "")) : "mailto:" + esc(val)}">${esc(label || val)}</a>`;
 
 const AdminHeader = () => `<header class="site-head"><div class="wrap bar">${Logo()}
-  <span class="tag">${I("lock", 14)} Staff admin</span><a class="btn btn-outline btn-sm" href="${esc(CONFIG.siteUrl || "./")}">View website</a></div></header>`;
+  <span class="tag">${I("lock", 14)} Staff admin</span><a class="btn btn-outline btn-sm" href="${esc(CONFIG.siteUrl || (/^admin\./i.test(location.hostname) ? location.protocol + "//" + location.hostname.replace(/^admin\./i, "") + "/" : "./"))}">View website</a></div></header>`;
 const AdminFooter = () => `<footer class="foot">${Weave()}<div class="wrap"><div class="foot-base"><span>© ${CONFIG.year} ${esc(CONFIG.name)} · Staff area</span></div></div></footer>`;
 const Header = () => IS_ADMIN_SITE ? AdminHeader() : `
 <div class="util"><div class="wrap"><div>
