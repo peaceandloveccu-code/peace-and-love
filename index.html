@@ -136,7 +136,11 @@ body.show-ph mark.ph{background:rgba(211,25,28,.28);outline:1px dashed var(--gol
   .nav .btn{display:flex;margin-top:1rem}
 }
 @media (min-width:1101px){.nav .only-mobile{display:none}}
-@media (max-width:760px){.util .wrap>div:last-child{display:none}.util span:nth-child(n+2){display:none}}
+.util-right{display:flex;align-items:center;gap:1.4rem}
+.util .util-links{margin:0}
+.util a.util-admin{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .8rem;border:1px solid rgba(255,255,255,.4);border-radius:var(--r-pill);font-weight:600;text-decoration:none;color:#fff}
+.util a.util-admin:hover{background:rgba(255,255,255,.12);border-color:#fff}
+@media (max-width:760px){.util .util-links{display:none}.util span:nth-child(n+2){display:none}.util .wrap{align-items:center}}
 
 /* hero */
 .hero{background:linear-gradient(135deg,var(--navy) 0%,#0f2a63 60%,#143a8a 100%);color:#fff;position:relative;overflow:hidden}
@@ -684,14 +688,13 @@ const Header = () => `
   <span>${I("phone", 15)} ${contactLink("tel", CONFIG.phone)}</span>
   <span>${I("mail", 15)} ${contactLink("mail", CONFIG.email)}</span>
   <span>${I("clock", 15)} ${fmt(CONFIG.hoursShort)}</span></div>
-  <div><a href="#/portal">Member Portal</a> &nbsp;|&nbsp; <a href="#/faq">FAQ</a> &nbsp;|&nbsp; <a href="#/admin">Staff admin</a></div></div></div>
+  <div class="util-right"><span class="util-links"><a href="#/portal">Member Portal</a> &nbsp;|&nbsp; <a href="#/faq">FAQ</a></span><a class="util-admin" href="#/admin">${I("lock", 14)} Staff admin</a></div></div></div>
 <header class="site-head"><div class="wrap bar">
   ${Logo()}
   <nav class="nav" id="nav" aria-label="Main" data-open="false"><ul>
     ${NAV.map(([r, l]) => `<li><a href="#/${r}" data-nav="${r}">${l}</a></li>`).join("")}
     <li class="only-mobile"><a href="#/portal" data-nav="portal">Member Portal</a></li>
     <li class="only-mobile"><a href="#/faq" data-nav="faq">FAQ</a></li>
-    <li class="only-mobile"><a href="#/admin" data-nav="admin">Staff admin</a></li>
     <li class="only-mobile"><a class="btn btn-primary" href="#/membership">Become a Member</a></li></ul></nav>
   <div class="head-actions">
     <button class="icon-btn" type="button" data-search-open aria-label="Search this site">${I("search")}</button>
