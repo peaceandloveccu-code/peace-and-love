@@ -343,7 +343,7 @@ a[href^="tel:"]{white-space:nowrap}
 .social{display:flex;gap:.6rem;margin-top:1.2rem}
 .social a{width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;color:#fff}
 .social a:hover{background:rgba(255,255,255,.12)}
-.foot-base{border-top:1px solid rgba(255,255,255,.14);padding:1.4rem 0 1.8rem;font-size:.86rem;display:flex;flex-wrap:wrap;gap:.8rem 2rem;justify-content:space-between;align-items:center}
+.foot-base{border-top:1px solid rgba(255,255,255,.14);padding:1.4rem 0 calc(1.8rem + 64px);font-size:.86rem;display:flex;flex-wrap:wrap;gap:.8rem 2rem;justify-content:space-between;align-items:center}
 @media (max-width:960px){.foot-in{grid-template-columns:1fr 1fr}}
 @media (max-width:560px){.foot-in{grid-template-columns:1fr}}
 
@@ -684,13 +684,14 @@ const Header = () => `
   <span>${I("phone", 15)} ${contactLink("tel", CONFIG.phone)}</span>
   <span>${I("mail", 15)} ${contactLink("mail", CONFIG.email)}</span>
   <span>${I("clock", 15)} ${fmt(CONFIG.hoursShort)}</span></div>
-  <div><a href="#/portal">Member Portal</a> &nbsp;|&nbsp; <a href="#/faq">FAQ</a></div></div></div>
+  <div><a href="#/portal">Member Portal</a> &nbsp;|&nbsp; <a href="#/faq">FAQ</a> &nbsp;|&nbsp; <a href="#/admin">Staff admin</a></div></div></div>
 <header class="site-head"><div class="wrap bar">
   ${Logo()}
   <nav class="nav" id="nav" aria-label="Main" data-open="false"><ul>
     ${NAV.map(([r, l]) => `<li><a href="#/${r}" data-nav="${r}">${l}</a></li>`).join("")}
     <li class="only-mobile"><a href="#/portal" data-nav="portal">Member Portal</a></li>
     <li class="only-mobile"><a href="#/faq" data-nav="faq">FAQ</a></li>
+    <li class="only-mobile"><a href="#/admin" data-nav="admin">Staff admin</a></li>
     <li class="only-mobile"><a class="btn btn-primary" href="#/membership">Become a Member</a></li></ul></nav>
   <div class="head-actions">
     <button class="icon-btn" type="button" data-search-open aria-label="Search this site">${I("search")}</button>
@@ -724,7 +725,7 @@ const Footer = () => `<footer class="foot">${Weave()}<div class="wrap">
    <p style="font-size:.86rem;margin-top:1rem">${fmt(CONFIG.regulatory)}</p></nav>
  </div>
  <div class="foot-base"><span>© ${CONFIG.year} ${fmt(CONFIG.name)}. All rights reserved.</span>
-  <span class="row" style="gap:1.2rem"><button class="link-btn" type="button" data-toggle-ph aria-pressed="false">Highlight replaceable content</button><a href="#/admin">Staff admin</a></span></div>
+  <span class="row" style="gap:1.2rem"><button class="link-btn" type="button" data-toggle-ph aria-pressed="false">Highlight replaceable content</button></span></div>
 </div></footer>`;
 
 const Fab = () => CONFIG.whatsapp
