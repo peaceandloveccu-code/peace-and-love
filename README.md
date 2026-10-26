@@ -7,7 +7,20 @@ A self-contained, mobile-responsive website for Peace & Love Co-operative Credit
 - Home, About (incl. Leadership & Team), Savings, Loans (with a repayment calculator), Membership application, Member Portal (coming soon), Financial Education, News & Announcements, member testimonials, FAQ, Contact, and legal pages
 - Content sourced from the Society's Bye-Laws and Articles of Association (mission, vision, core values, membership eligibility, loan/savings rules, governance)
 - Branding built from the organization's own logo
-- A staff admin dashboard (`#/admin`, linked in the footer) for editing site content
+- A staff admin dashboard for editing site content, served separately from the public site (see below)
+
+## Staff admin address
+
+The public site has no admin link and won't open the admin page. Staff use the admin address instead:
+
+- `admin.html` in this repository (for example `https://<github-pages-address>/admin.html`), or
+- an `admin.` subdomain of the credit union's domain (for example `https://admin.yourdomain.com`), which serves the same page.
+
+`admin.html` is an exact copy of `index.html` except that it asks search engines not to list it; the page detects that it is the admin address and shows only the staff sign-in and editing tabs. Regenerate it after changing `index.html`:
+
+```sh
+sed 's#<meta name="robots" content="index, follow">#<meta name="robots" content="noindex, nofollow">#' index.html > admin.html
+```
 
 ## Content storage (Supabase)
 

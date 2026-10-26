@@ -137,9 +137,12 @@ body.show-ph mark.ph{background:rgba(211,25,28,.28);outline:1px dashed var(--gol
 }
 @media (min-width:1101px){.nav .only-mobile{display:none}}
 .util-right{display:flex;align-items:center;gap:1.4rem}
+[tabindex="-1"]:focus:not(:focus-visible),h1[tabindex="-1"]:focus{outline:none}
+.admin-site .crumbs{display:none}
+.admin-site .site-head .tag{white-space:nowrap}
+@media (max-width:640px){.admin-site .logo small,.admin-site .site-head .tag{display:none}.admin-site .logo b{font-size:1rem}}
+@media (max-width:420px){.admin-site .logo span{display:none}}
 .util .util-links{margin:0}
-.util a.util-admin{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .8rem;border:1px solid rgba(255,255,255,.4);border-radius:var(--r-pill);font-weight:600;text-decoration:none;color:#fff}
-.util a.util-admin:hover{background:rgba(255,255,255,.12);border-color:#fff}
 @media (max-width:760px){.util .util-links{display:none}.util span:nth-child(n+2){display:none}.util .wrap{align-items:center}}
 
 /* hero */
@@ -439,12 +442,20 @@ const CONFIG = {
   formEndpoint: "",   // your secure HTTPS form-handling URL. Empty = demo mode (nothing is sent).
   heroImage: "",      // URL of a real photo of members. Empty = built-in illustration.
   portalEnabled: false, portalUrl: "", // set both only when a secure, separately hosted member portal exists
+  siteUrl: "",        // public website address (shown as "View website" on the admin site); empty = same folder
   year: new Date().getFullYear()
 };
 
 /* =====================================================================
    2. CONTENT DATA — products, FAQs, articles, news, testimonials
    ===================================================================== */
+/* The staff admin runs on its own address (admin.<domain>, or admin.html).
+   The public site has no admin link and won't open the admin page;
+   the Claude preview still allows #/admin for convenience. */
+const IS_ADMIN_SITE = /^admin\./i.test(location.hostname) || /(^|\/)admin\.html$/i.test(location.pathname);
+const ADMIN_ROUTE_OK = IS_ADMIN_SITE || typeof claude !== "undefined";
+if (IS_ADMIN_SITE) { const r = document.querySelector('meta[name="robots"]'); if (r) r.setAttribute("content", "noindex, nofollow"); document.documentElement.classList.add("admin-site"); }
+
 const NAV = [["", "Home"], ["about", "About Us"], ["savings", "Savings"], ["loans", "Loans"], ["membership", "Membership"], ["education", "Education"], ["news", "News"], ["contact", "Contact"]];
 
 const SAVINGS = [
@@ -683,12 +694,15 @@ const Logo = () => `<a class="logo" href="#/" aria-label="${esc(CONFIG.name)} �
 const contactLink = (kind, val, label) => /\[/.test(val) ? `<span>${fmt(val)}</span>` :
   `<a href="${kind === "tel" ? "tel:" + esc(val.replace(/\s/g, "")) : "mailto:" + esc(val)}">${esc(label || val)}</a>`;
 
-const Header = () => `
+const AdminHeader = () => `<header class="site-head"><div class="wrap bar">${Logo()}
+  <span class="tag">${I("lock", 14)} Staff admin</span><a class="btn btn-outline btn-sm" href="${esc(CONFIG.siteUrl || "./")}">View website</a></div></header>`;
+const AdminFooter = () => `<footer class="foot">${Weave()}<div class="wrap"><div class="foot-base"><span>© ${CONFIG.year} ${esc(CONFIG.name)} · Staff area</span></div></div></footer>`;
+const Header = () => IS_ADMIN_SITE ? AdminHeader() : `
 <div class="util"><div class="wrap"><div>
   <span>${I("phone", 15)} ${contactLink("tel", CONFIG.phone)}</span>
   <span>${I("mail", 15)} ${contactLink("mail", CONFIG.email)}</span>
   <span>${I("clock", 15)} ${fmt(CONFIG.hoursShort)}</span></div>
-  <div class="util-right"><span class="util-links"><a href="#/portal">Member Portal</a> &nbsp;|&nbsp; <a href="#/faq">FAQ</a></span><a class="util-admin" href="#/admin">${I("lock", 14)} Staff admin</a></div></div></div>
+  <div class="util-right"><span class="util-links"><a href="#/portal">Member Portal</a> &nbsp;|&nbsp; <a href="#/faq">FAQ</a></span></div></div></div>
 <header class="site-head"><div class="wrap bar">
   ${Logo()}
   <nav class="nav" id="nav" aria-label="Main" data-open="false"><ul>
@@ -710,7 +724,7 @@ const socialLinks = () => [["facebook", "Facebook"], ["instagram", "Instagram"],
     : `<a href="#/contact" aria-label="${l} (link to be added)" title="Add your ${l} link in CONFIG.social">${I(k, 20)}</a>`;
 }).join("");
 
-const Footer = () => `<footer class="foot">${Weave()}<div class="wrap">
+const Footer = () => IS_ADMIN_SITE ? AdminFooter() : `<footer class="foot">${Weave()}<div class="wrap">
  <div class="foot-in">
   <div>${Logo()}<p style="max-width:22rem;font-size:.96rem">A member-owned financial cooperative promoting savings, affordable credit and the financial wellbeing of its members.</p>
    <div class="social">${socialLinks()}</div></div>
@@ -731,7 +745,7 @@ const Footer = () => `<footer class="foot">${Weave()}<div class="wrap">
   <span class="row" style="gap:1.2rem"><button class="link-btn" type="button" data-toggle-ph aria-pressed="false">Highlight replaceable content</button></span></div>
 </div></footer>`;
 
-const Fab = () => CONFIG.whatsapp
+const Fab = () => IS_ADMIN_SITE ? "" : CONFIG.whatsapp
   ? `<a class="fab" href="https://wa.me/${esc(CONFIG.whatsapp)}" target="_blank" rel="noopener noreferrer">${I("chat", 24)} <span>WhatsApp us</span></a>`
   : `<a class="fab plain" href="#/contact">${I("chat", 24)} <span>Contact us</span></a>`;
 
@@ -1364,9 +1378,12 @@ PAGES.admin = () => {
    ===================================================================== */
 let first = true;
 function route(soft) {
-  const raw = location.hash.replace(/^#\/?/, "").split("?")[0], [name, arg] = raw.split("/");
+  const raw = location.hash.replace(/^#\/?/, "").split("?")[0];
+  let [name, arg] = raw.split("/");
+  if (IS_ADMIN_SITE) name = "admin";
   let page = null;
-  if (name === "article" || (name === "education" && arg)) page = PAGES.article(arg);
+  if (name === "admin" && !ADMIN_ROUTE_OK) page = NOTFOUND();
+  else if (name === "article" || (name === "education" && arg)) page = PAGES.article(arg);
   else if (name === "legal") page = PAGES.legal(arg);
   else if (PAGES[name] && name !== "article" && name !== "legal") page = PAGES[name]();
   if (!page) page = NOTFOUND();
